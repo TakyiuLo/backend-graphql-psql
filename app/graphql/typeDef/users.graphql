@@ -1,0 +1,48 @@
+# import Response from 'response.graphql'
+
+type User {
+  email: String!
+  hashedPassword: String!
+  token: String
+}
+
+input SignUpInput {
+  email: String!
+  password: String!
+  password_confirmation: String!
+}
+
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+input ChangePasswordInput {
+  old: String!
+  new: String!
+}
+
+type SignUpPayload {
+  id: String!
+  email: String!
+}
+
+type SignInPayload {
+  id: String!
+  email: String!
+  token: String!
+}
+
+type Query {
+  users(email: String, id: String): [User!]!
+}
+
+type Mutation {
+  signUp(credentials: SignUpInput): SignUpPayload!
+  # signUp(email: String!, password: String!, password_confirmation: String!): SignUpPayload!
+  signIn(credentials: SignInInput): SignInPayload!
+  # signIn(email: String!, password: String!): SignInPayload!
+  changePassword(passwords: ChangePasswordInput): Response!
+  # changePassword(old: String!, new: String!): Response!
+  signOut: Response!
+}
