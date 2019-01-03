@@ -63,7 +63,7 @@ const prisma = new Prisma({
 const server = new ApolloServer({
   // enable playground and introspection if necessary (production)
   // introspection: true,
-  playground: true,
+  // playground: true,
   debug: !process.env.TESTENV,
   schema,
   context: req => ({
