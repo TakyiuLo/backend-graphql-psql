@@ -67,6 +67,7 @@ const server = new ApolloServer({
   engine: {
     apiKey: process.env.ENGINE_API_KEY
   },
+  tracing: true,
   cacheControl: true,
   // stop backtracing at responses on production
   debug: !process.env.TESTENV,
