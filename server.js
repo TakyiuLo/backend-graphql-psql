@@ -62,7 +62,7 @@ const prisma = new Prisma({
 // context: it can be api_keys, secrets, database, authentication
 const server = new ApolloServer({
   // enable playground and introspection if necessary (production)
-  // introspection: true,
+  introspection: true,
   // playground: true,
   debug: !process.env.TESTENV,
   schema,
