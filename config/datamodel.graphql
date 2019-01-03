@@ -1,0 +1,15 @@
+type User {
+  id: ID! @unique
+  email: String! @unique
+  hashedPassword: String!
+  token: String @unique
+  examples: [Example!]!
+}
+
+type Example {
+  id: ID! @unique
+  title: String!
+  text: String!
+  owner: User
+  # non openread if use !
+}

@@ -1,9 +1,8 @@
-# import Response from 'response.graphql'
+# import * from '../generated/prisma.graphql'
+# import Response from './response.graphql'
 
-type User {
-  email: String!
-  hashedPassword: String!
-  token: String
+type Query {
+  users(email: String, id: String): [User!]!
 }
 
 input SignUpInput {
@@ -23,26 +22,19 @@ input ChangePasswordInput {
 }
 
 type SignUpPayload {
-  id: String!
+  id: ID!
   email: String!
 }
 
 type SignInPayload {
-  id: String!
+  id: ID!
   email: String!
   token: String!
 }
 
-type Query {
-  users(email: String, id: String): [User!]!
-}
-
 type Mutation {
   signUp(credentials: SignUpInput): SignUpPayload!
-  # signUp(email: String!, password: String!, password_confirmation: String!): SignUpPayload!
   signIn(credentials: SignInInput): SignInPayload!
-  # signIn(email: String!, password: String!): SignInPayload!
   changePassword(passwords: ChangePasswordInput): Response!
-  # changePassword(old: String!, new: String!): Response!
   signOut: Response!
 }

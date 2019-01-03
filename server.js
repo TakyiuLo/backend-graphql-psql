@@ -1,20 +1,14 @@
 // Apollo server with the entire schema
 const { ApolloServer } = require('apollo-server-express')
-const schema = require('./app/graphql/schema')
+const { Prisma } = require('prisma-binding')
+const schema = require('./app/schema')
 
 // require necessary NPM packages
 const express = require('express')
-const bodyParser = require('body-parser')
-const mongoose = require('mongoose')
 const cors = require('cors')
 
 // require route files
-const exampleRoutes = require('./app/routes/example_routes')
-const userRoutes = require('./app/routes/user_routes')
-
-// require database configuration logic
-// `db` will be the actual Mongo URI as a string
-const db = require('./config/db')
+// Not used
 
 // load secret keys for signing tokens from .env
 const dotenv = require('dotenv')
@@ -24,20 +18,11 @@ dotenv.config()
 // Set to secret key base test if in test
 if (process.env.TESTENV) {
   process.env.KEY = process.env.SECRET_KEY_BASE_TEST
-// Set to secret key base development if not test and no key present
-// process.env.KEY is present in production and set through heroku
+  // Set to secret key base development if not test and no key present
+  // process.env.KEY is present in production and set through heroku
 } else if (!process.env.KEY) {
   process.env.KEY = process.env.SECRET_KEY_BASE_DEVELOPMENT
 }
-
-// require configured passport authentication middleware
-const auth = require('./lib/auth')
-
-// establish database connection
-mongoose.Promise = global.Promise
-mongoose.connect(db, {
-  useMongoClient: true
-})
 
 // instantiate express application object
 const app = express()
@@ -62,41 +47,36 @@ app.use((req, res, next) => {
   next()
 })
 
-// register passport authentication middleware
-app.use(auth)
-
-// add `bodyParser` middleware which will parse JSON requests into
-// JS objects before they reach the route files.
-// The method `.use` sets up middleware for the Express application
-app.use(bodyParser.json())
-// this parses requests sent by `$.ajax`, which use a different content type
-app.use(bodyParser.urlencoded({ extended: true }))
-
-// register route files
-app.use(exampleRoutes)
-app.use(userRoutes)
+// Prisma
+const prisma = new Prisma({
+  // where to generate
+  typeDefs: 'app/generated/prisma.graphql',
+  // Prisma endpoint
+  endpoint: process.env.PRISMA_URL
+  // secret: process.env.PRISMA_SECRET,
+  // debug: false
+})
 
 // APOLLO SERVER HERE
 // this will auto make a route to /graphql
 // context: it can be api_keys, secrets, database, authentication
 const server = new ApolloServer({
-  // enable playground and introspection if necessary
+  // enable playground and introspection if necessary (production)
   // introspection: true,
   // playground: true,
+  debug: !process.env.TESTENV,
   schema,
-  // context: {
-  //   db: mongoose.connect(db, {
-  //     useMongoClient: true
-  //   })
-  // },
-  context: ({ req }) => {
+  context: req => ({
     // - If you use passport, you will need to use another route to authenticate
     // user and pass the user to /graphql
-    return req
-  },
+    ...req,
+    // Prisma Server, Prisma will connect to database
+    prisma
+  }),
+  // having this will disable the warning when npm run server
   path: '/graphql'
-
 })
+
 // apply ApolloServer as middleware
 server.applyMiddleware({ app })
 

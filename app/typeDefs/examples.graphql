@@ -1,0 +1,42 @@
+# import * from '../generated/prisma.graphql'
+# import Response from './response.graphql'
+type ExampleOwner {
+  email: String
+}
+
+type SearchExamplePayload {
+  id: ID
+  title: String
+  text: String
+  owner: ExampleOwner
+}
+
+type Query {
+  examples(
+    where: ExampleWhereInput
+    orderBy: ExampleOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [SearchExamplePayload]!
+  example(id: ID!): SearchExamplePayload!
+}
+
+input createExampleInput {
+  title: String!
+  text: String!
+}
+
+input updateExampleInput {
+  id: ID!
+  title: String
+  text: String
+}
+
+type Mutation {
+  createExample(example: createExampleInput): Example!
+  updateExample(example: updateExampleInput): Example!
+  deleteExample(id: ID!): Response!
+}
