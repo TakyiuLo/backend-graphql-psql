@@ -110,6 +110,6 @@ Using Prisma Instant Deploy to heroku. The few main parts are this, database and
 4. Next, we'll set up the service. When you did the Prisma Server, Prisma auto setup their layer. Click new service and copy the prisma login command and run it in your terminal.
 5. Now, in you .env file change PRISMA_URL from http://localhost:4742 to your heroku domain like this: `https://<app-name>.herokuapp.com/<service-name>/<stage>`. `<stage>` could be `production` or `development`. You don't have to give it a name or stage, but it will set it to `default` by default
 6. Now since command `prisma deploy` required a .env file, run `prisma deploy --env-file .env`. This is upload the generated schema to your server.
-7. Now setup you backend application like you would normally would. Set up SECRET_KEY and CLIENT_ORIGIN, push to heroku... pretty much follow GA's Express deployment guide.
+7. Now setup you backend application like you would normally would. Set up PRISMA_URL, SECRET_KEY, and CLIENT_ORIGIN, push to heroku.
 8. (OH BTW don't forget to remove users query resolver on production)!!!
 9. Super easy, have fun!!!
