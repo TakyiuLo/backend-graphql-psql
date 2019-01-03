@@ -67,7 +67,10 @@ const server = new ApolloServer({
   engine: {
     apiKey: process.env.ENGINE_API_KEY
   },
+  cacheControl: true,
+  // stop backtracing at responses on production
   debug: !process.env.TESTENV,
+  // below are nessary properties
   schema,
   context: req => ({
     // - If you use passport, you will need to use another route to authenticate
