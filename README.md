@@ -152,6 +152,8 @@ const data = {
 }
 ```
 
+- `lib/auth.js` is not in use
+
 #### Model
 
 One(User) to Many(Examples)
