@@ -75,6 +75,7 @@ function updateExample (parent, args, ctx, info) {
   const { prisma, req } = ctx
   let { example } = args
   // move the `id` up one level with the rest of the properties as data
+  // to have a better looking code
   example = wrapPopProperty(example, 'id')
   const { id, data } = example
   const where = { id }
