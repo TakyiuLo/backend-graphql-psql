@@ -1,4 +1,5 @@
 // Apollo server with the entire schema
+// const { ApolloEngine } = require('apollo-engine')
 const { ApolloServer } = require('apollo-server-express')
 const { Prisma } = require('prisma-binding')
 const schema = require('./app/schema')
@@ -86,6 +87,21 @@ const server = new ApolloServer({
 
 // apply ApolloServer as middleware
 server.applyMiddleware({ app })
+
+// const engine = new ApolloEngine({
+//   apiKey: process.env.ENGINE_API_KEY
+// })
+
+// Call engine.listen(...) instead of app.listen(port) as you usually would
+// engine.listen(
+//   {
+//     port,
+//     expressApp: app
+//   },
+//   () => {
+//     console.log('listening on port ' + port)
+//   }
+// )
 
 // run API on designated port (4741 in this case)
 app.listen(port, () => {
