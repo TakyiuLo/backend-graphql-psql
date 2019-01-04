@@ -130,6 +130,7 @@ const data = {
 ```
 
 - one can query stuff like this
+- I turned caching on
 
 ```GraphQL
 {
@@ -152,7 +153,7 @@ const data = {
 }
 ```
 
-- `lib/auth.js` is not in use
+- `lib/auth.js` is not in use, since its using `passport`.
 
 #### Model
 
@@ -185,6 +186,7 @@ type Example {
 - Test Prisma and Apollo
 - Make sure it does what it suppose to do
 - Trail and errors, again and again
+- Might import RedisDB as caching or just a regualar caching
 
 #### How to deploy
 
