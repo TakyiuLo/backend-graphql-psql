@@ -124,21 +124,20 @@ const { handleUser, BadParamsError } = require('../lib/custom_errors')
 function requireToken (resolver, [parent, args, ctx, info]) {
   const { req, prisma } = ctx
   const auth = req.headers.authorization
+
   // check if authorization exists
   if (!auth) {
     throw new BadParamsError()
   }
+
   const [authType, token] = auth.split(' ')
+  const where = { token }
 
   console.log(`Using AuthType: ${authType} with resolver: ${resolver.name}`)
 
   // not using info for nested user's relationships
   return prisma.query
-    .user({
-      where: {
-        token
-      }
-    })
+    .user({ where })
     .then(handleUser)
     .then(user => (ctx.req.user = user))
     .then(() => resolver(parent, args, ctx, info))
