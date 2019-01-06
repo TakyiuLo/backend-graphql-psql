@@ -50,7 +50,7 @@ async function signIn (parent, args, ctx, info) {
   const { prisma } = ctx
   const { credentials } = args
   const { email, password } = credentials
-  const where = { email }
+  const where = { email } // used email to verify user, beacuse email is unique
 
   return prisma.query
     .user({ where })
@@ -118,16 +118,16 @@ async function changePassword (parent, args, ctx, info) {
 async function signOut (parent, args, ctx, info) {
   const { prisma, req } = ctx
   const { user } = req
+  const { id } = user
+  const where = { id }
 
   // create a new random token for the user, invalidating the current one
   const token = crypto.randomBytes(16).toString()
-  console.log('user, token', user, token)
+  const data = { token }
+
   // save the token and respond with 204
   return prisma.mutation
-    .updateUser({
-      where: { id: user.id },
-      data: { token }
-    })
+    .updateUser({ where, data })
     .then(() => ({
       status: '204',
       message: 'Successfully Signed Out'
