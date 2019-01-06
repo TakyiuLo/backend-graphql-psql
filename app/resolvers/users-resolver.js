@@ -50,43 +50,32 @@ async function signIn (parent, args, ctx, info) {
   const { prisma } = ctx
   const { credentials } = args
   const { email, password } = credentials
+  const where = { email }
 
-  let user
-  // start a promise chain, so that any errors will pass to `handle`
-  return Promise.resolve(credentials)
-    .then(() =>
-      prisma.query.user({
-        where: {
-          email
-        }
-      })
-    )
-    .then(record => {
-      if (!record) {
+  return prisma.query
+    .user({ where })
+    .then(user => {
+      if (!user) {
         throw new BadParamsError()
       }
-      // save the found user outside the promise chain
-      user = record
       // `bcrypt.compare` will return true if the result of hashing `password`
       // is exactly equal to the hashed password stored in the DB
       return bcrypt.compare(password, user.hashedPassword)
     })
     .then(correctPassword => {
       // if the passwords matched
-      if (correctPassword) {
-        // the token will be a 16 byte random hex string
-        const token = crypto.randomBytes(16).toString('hex')
-        user.token = token
-        // save the token to the DB as a property on user
-        return prisma.mutation.updateUser({
-          where: { id: user.id },
-          data: { token }
-        })
-      } else {
+      if (!correctPassword) {
         // throw an error to trigger the error handler and end the promise chain
         // this will send back 422 and a message about sending wrong parameters
         throw new BadParamsError()
       }
+    })
+    .then(() => {
+      // the token will be a 16 byte random hex string
+      const token = crypto.randomBytes(16).toString('hex')
+      const data = { token }
+      // save the token to the DB as a property on user
+      return prisma.mutation.updateUser({ where, data })
     })
     .catch(handle)
 }

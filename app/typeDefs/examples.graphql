@@ -1,5 +1,6 @@
 # import * from '../generated/prisma.graphql'
 # import Response from './response.graphql'
+
 type ExampleOwner {
   email: String
 }

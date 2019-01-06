@@ -9,18 +9,21 @@ Prisma, PostgreSQL, GraphQL, Apollo Server, Docker Compose
 - (local) Make sure Docker is running first
 - run `docker-compose up -d` to setup the database in docker (make sure you are
   in the `/config` directory)
-- run `prisma deploy` on root to "deploy"(generate) the schema we need for our
-  app
+- run `prisma deploy` on root to "deploy"(also generate) the schema we need for
+  our app
+- set `PRISMA_URL` to your .env, usually it is `http://localhost:4742`
+  add `PORT` to change default port(4741) for application
+  change docker-compose for Prisma port(4742) if required
 - run `npm run start` to start the app
 
 #### Explanations (notes)
 
 From my understanding, (unorder list)
 
-- Using docker-compose to compose tasks (To host the prisma server locally)
+- Using docker-compose to compose tasks (To host the db, prisma server locally)
 - So the application have three major services, App(:4741), Prisma(:4742), and
   PSQL(:5432)
-- Prisma stuff are database configurations, Connection, Model, Typedefs
+- Prisma stuff are Database connection and Model
 - App stuff are logical Graphql, Prisma, Resolvers, Mutations, Query
 - `prisma.yml` must be on the root directory same as `.graphqlconfig.yml` (don't know why)
 
