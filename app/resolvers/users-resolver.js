@@ -84,25 +84,29 @@ async function changePassword (parent, args, ctx, info) {
   const { prisma, req } = ctx
   const { passwords } = args
   const { user } = req
+  const { id } = user
+  const where = { id }
 
   return (
     Promise.resolve(user)
       .then(() => bcrypt.compare(passwords.old, user.hashedPassword))
       .then(correctPassword => {
-        // throw an error if the new password is missing, an empty string,
-        // or the old password was wrong
-        if (!passwords.new || !correctPassword) {
+        // throw an error if the
+        // the old password was wrong
+        // or passwords are same,
+        // or new password is missing(an empty string),
+        if (
+          !correctPassword ||
+          passwords.new === passwords.old ||
+          !passwords.new
+        ) {
           throw new BadParamsError()
         }
       })
       // hash the new password
       .then(() => bcrypt.hash(passwords.new, bcryptSaltRounds))
-      .then(hash =>
-        prisma.mutation.updateUser({
-          where: { id: user.id },
-          data: { hashedPassword: hash }
-        })
-      )
+      .then(hashedPassword => ({ hashedPassword }))
+      .then(data => prisma.mutation.updateUser({ where, data }))
       .then(() => ({
         status: '204',
         message: 'Successfully Changed Password'
@@ -132,10 +136,10 @@ async function signOut (parent, args, ctx, info) {
 }
 
 const usersResolver = {
-  // Query: {
-  //   // remove this query when in production
-  //   users: (parent, args, ctx, info) => ctx.prisma.query.users(args, info)
-  // },
+  Query: {
+    // remove this query when in production
+    users: (parent, args, ctx, info) => ctx.prisma.query.users(args, info)
+  },
   Mutation: {
     signUp,
     signIn,
