@@ -87,17 +87,18 @@ function plog (obj) {
 }
 
 /*
- * onlyProperties
- *   Test if every properties are allow. By default, it will do a weak compare.
+ * isPropertyAllow
+ *   #function: Test if every properties are allow. By default, it will do a
+ *   weak compare. exact=false means a weak compare
  *   For instance, given
  *     const object = { "id_not": "0" }
  *     const authorizedProperties = ["id"]
  *   , it will return true
  *
- *   @params: object, authorizedProperties(Array of String), exact(default: false)
+ *   @params: object, authorizedProperties(Array of Strings), exact(default: false)
  *   @returns: obj
  */
-function onlyProperties (object, authorizedProperties, exact = false) {
+function isPropertyAllow (object, authorizedProperties, exact = false) {
   return Object.keys(object).every(property => {
     for (let i = 0; i < authorizedProperties.length; i++) {
       let test = exact
@@ -149,7 +150,7 @@ module.exports = {
   getFiles,
   wrapPopProperty,
   removeEmptyStringProperties,
-  onlyProperties,
+  isPropertyAllow,
   plog,
   requireToken
 }
