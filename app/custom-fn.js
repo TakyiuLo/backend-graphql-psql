@@ -98,7 +98,7 @@ function plog (obj) {
  *   @params: object, authorizedProperties(Array of Strings), exact(default: false)
  *   @returns: obj
  */
-function isPropertyAllow (object, authorizedProperties, exact = false) {
+function arePropertiesAllowed (object, authorizedProperties, exact = false) {
   return Object.keys(object).every(property => {
     for (let i = 0; i < authorizedProperties.length; i++) {
       let test = exact
@@ -150,7 +150,7 @@ module.exports = {
   getFiles,
   wrapPopProperty,
   removeEmptyStringProperties,
-  isPropertyAllow,
+  arePropertiesAllowed,
   plog,
   requireToken
 }

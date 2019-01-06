@@ -19,7 +19,7 @@ const {
   requireToken,
   wrapPopProperty,
   removeEmptyStringProperties,
-  isPropertyAllow
+  arePropertiesAllowed
 } = require('../custom-fn')
 
 // INDEX
@@ -30,7 +30,7 @@ function getExamples (parent, args, ctx, info) {
   const where = args.where
   const owner = where && args.where.owner
   const authorizedProperties = ['id', 'email']
-  const isAuthorized = isPropertyAllow(owner, authorizedProperties)
+  const isAuthorized = arePropertiesAllowed(owner, authorizedProperties)
 
   if (!isAuthorized) {
     throw new AuthenticationError()
