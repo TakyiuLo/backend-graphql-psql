@@ -12,8 +12,10 @@ Prisma, PostgreSQL, GraphQL, Apollo Server, Docker Compose
 - run `prisma deploy` on root to "deploy"(also generate) the schema we need for
   our app
 - set `PRISMA_URL` to your .env, usually it is `http://localhost:4742`
-  add `PORT` to change default port(4741) for application
-  change docker-compose for Prisma port(4742) if required
+- set `PRISMA_SECRET` if require, then run `prisma deploy` and in `/config` run `docker-compose up -d`
+  - by default Auth is disable for Prisma Playground if `disableAuth: true` in `prisma.yml` for local development
+- (optional) add `PORT` to change default port(4741) for application
+- (optional) change docker-compose for Prisma port(4742) if required
 - run `npm run start` to start the app
 
 #### Explanations (notes)
@@ -200,7 +202,7 @@ Using Prisma Instant Deploy to heroku. The few main parts are this, database and
 3. Once the server status said "Healthy", sometimes if you clicked on the server, it might say status is "booting"...etc(Prisma Cloud is still a very new service). But as long as the list of servers page said its "Healthy", its fine. BTW, for now Prisma Instant Deploy still only deploy with PSQL on Heroku.
 4. Next, we'll set up the service. When you did the Prisma Server, Prisma auto setup their layer. Click new service and copy the prisma login command and run it in your terminal.
 5. Now, in you .env file change PRISMA_URL from http://localhost:4742 to your heroku domain like this: `https://<app-name>.herokuapp.com/<service-name>/<stage>`. `<stage>` could be `production` or `development`. You don't have to give it a name or stage, but it will set it to `default` by default
-6. Now since command `prisma deploy` required a .env file, run `prisma deploy --env-file .env`. This is going to upload the generated schema to your server.
+6. Now since command `prisma deploy` required a .env file, run `prisma deploy --env-file .env`. (make sure you enable auth in `prisma.yml`) This is going to upload the generated schema to your server with auth.
 7. Setup a `PRISMA_SECRET` on Heroku, and restart Heroku. You should test your playground on Heroku. When you go to your prisma endpoint playground, any unauthorized request should say something like "Your token is invalid."
 8. Now setup you backend application like you would normally would. Set up `PRISMA_URL`, `PRISMA_SECRET`, `SECRET_KEY`, `CLIENT_ORIGIN` environemnt variables, and push to heroku.
 9. If you need Apollo Engine too, turn on introspection, and engine in server.js. Then paste you Apollo API in .env as `ENGINE_API_KEY` and your heroku config var. Then run `npx apollo service:push --endpoint=<your-heroku-graphql-endpoint>`.

@@ -1,5 +1,6 @@
 endpoint: ${env:PRISMA_URL}
 secret: ${env:PRISMA_SECRET}
+disableAuth: true
 datamodel: config/datamodel.graphql
 hooks:
   post-deploy:
