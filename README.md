@@ -7,13 +7,11 @@ Prisma, PostgreSQL, GraphQL, Apollo Server, Docker Compose
 #### How to run
 
 - (local) Make sure Docker is running first
-- run `docker-compose up -d` to setup the database in docker (make sure you are
-  in the `/config` directory)
-- run `prisma deploy` on root to "deploy"(also generate) the schema we need for
-  our app
+- run `docker-compose up -d` in `/config` directory
 - set `PRISMA_URL` to your .env, usually it is `http://localhost:4742`
-- set `PRISMA_SECRET`, then run `prisma deploy` and in `/config` run `docker-compose up -d`
-  - by default Auth is disable for Prisma Playground if `disableAuth: true` in `prisma.yml` for local development
+- set `PRISMA_SECRET` to your .env, anything is fine
+- run `prisma deploy`
+- run `docker-compose up -d` in `/config` directory
 - (optional) add `PORT` to change default port(4741) for application
 - (optional) change docker-compose for Prisma port(4742) if required
 - run `npm run start` to start the app
@@ -42,6 +40,8 @@ hooks:
     - graphql get-schema --project prisma
     - prisma generate
 ```
+
+- by default Auth is disable for Prisma Playground if `disableAuth: true` in `prisma.yml` for local development
 
 - The way to test/pass authorization in header is following
 
@@ -158,7 +158,8 @@ const data = {
 ```
 
 - `lib/auth.js` is not in use, since its using `passport`.
-- Caching is on
+
+- Caching is on for fun
 
 #### Model
 
@@ -195,7 +196,7 @@ type Example {
 
 #### How to deploy
 
-Using Prisma Instant Deploy to heroku. The few main parts are this, database and Prisma server together, and your backend application. Meaning you will need atleast two Heroku server.
+Using Prisma Instant Deploy to heroku. The few main parts are this, database and Prisma server together, and then your backend application. Meaning you will need atleast two Heroku server.
 
 1. Make an account of Prisma Cloud, and heroku
 2. go to server and create one, name of your choice, heroku will show up with an almost same name
