@@ -133,7 +133,6 @@ const data = {
 ```
 
 - one can query stuff like this
-- I turned caching on
 
 ```GraphQL
 {
@@ -157,6 +156,7 @@ const data = {
 ```
 
 - `lib/auth.js` is not in use, since its using `passport`.
+- Caching is on
 
 #### Model
 

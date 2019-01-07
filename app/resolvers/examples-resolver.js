@@ -25,7 +25,7 @@ const {
 // INDEX
 function getExamples (parent, args, ctx, info) {
   // we can not use requireToken here because we want it to be openRead while
-  // client can't retreive any sensitive information about owner of the example
+  // client can't retreive any sensitive information about owner
   // such as token, hashedPassword, etc.
   const where = args.where
   const owner = where && args.where.owner
