@@ -12,7 +12,7 @@ Prisma, PostgreSQL, GraphQL, Apollo Server, Docker Compose
 - run `prisma deploy` on root to "deploy"(also generate) the schema we need for
   our app
 - set `PRISMA_URL` to your .env, usually it is `http://localhost:4742`
-- set `PRISMA_SECRET` if require, then run `prisma deploy` and in `/config` run `docker-compose up -d`
+- set `PRISMA_SECRET`, then run `prisma deploy` and in `/config` run `docker-compose up -d`
   - by default Auth is disable for Prisma Playground if `disableAuth: true` in `prisma.yml` for local development
 - (optional) add `PORT` to change default port(4741) for application
 - (optional) change docker-compose for Prisma port(4742) if required
