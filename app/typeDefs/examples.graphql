@@ -1,50 +1,30 @@
 # import * from '../generated/prisma.graphql'
 # import Response from './response.graphql'
 
-type ExampleOwner {
+# Override UserWhereInput from prisma to prevent sensitive information
+input UserWhereInput {
+  AND: [UserWhereInput!]
+  OR: [UserWhereInput!]
   email: String
 }
 
-type SearchExamplePayload {
-  id: ID
-  title: String
-  text: String
-  owner: ExampleOwner
-}
-
-input exampleInput {
-  id: ID!
-}
-
 type Query {
-  examples(
-    where: ExampleWhereInput
-    orderBy: ExampleOrderByInput
-    skip: Int
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): [SearchExamplePayload]!
-  example(where: exampleInput): SearchExamplePayload!
+  examples(where: ExampleWhereInput, orderBy: ExampleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Example]!
+  example(where: ExampleWhereUniqueInput!): Example
 }
 
-input createExampleInput {
-  title: String!
-  text: String!
-}
-
-input updateExampleInput {
+# Override to prevent change owner
+input ExampleUpdateInput {
   title: String
   text: String
-}
-
-input whereExampleInput {
-  id: ID!
 }
 
 type Mutation {
-  createExample(example: createExampleInput): Example!
-  updateExample(where: whereExampleInput, data: updateExampleInput): Example!
-  deleteExample(where: whereExampleInput): Response!
+  createExample(data: ExampleCreateInput!): Example!
+  updateExample(data: ExampleUpdateInput!, where: ExampleWhereUniqueInput!): Example
+  deleteExample(where: ExampleWhereUniqueInput!): Response
+
+  # createExample(example: createExampleInput): Example!
+  # updateExample(where: whereExampleInput, data: updateExampleInput): Example!
+  # deleteExample(where: whereExampleInput): Response!
 }

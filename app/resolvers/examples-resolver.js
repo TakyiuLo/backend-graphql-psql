@@ -1,3 +1,5 @@
+// we can forward direct args to prisma
+const { forwardTo } = require('prisma-binding')
 // we'll use this to intercept any errors that get thrown and send them
 // back to the client with the appropriate status code
 const handle = require('../../lib/error_handler')
@@ -11,57 +13,20 @@ const { handle404 } = customErrors
 // we'll use this function to send 401 when a user tries to modify a resource
 // that's owned by someone else
 const { requireOwnership } = customErrors
-// we'lll use AuthenticationError from ApolloServer to handle unauthorized action
-const { AuthenticationError } = require('apollo-server-express')
 
 // requireToken also mean a resolver is 'Protected'
-const {
-  requireToken,
-  removeEmptyStringProperties,
-  arePropertiesAllowed
-} = require('../custom-fn')
-
-// INDEX
-function getExamples (parent, args, ctx, info) {
-  // we can not use requireToken here because we want it to be openRead while
-  // client can't retreive any sensitive information about owner
-  // such as token, hashedPassword, etc.
-  const where = args.where
-  const owner = where && args.where.owner
-  const authorizedProperties = ['id', 'email']
-  const isAuthorized = arePropertiesAllowed(owner, authorizedProperties)
-
-  if (!isAuthorized) {
-    throw new AuthenticationError()
-  }
-
-  return ctx.prisma.query.examples(args, info)
-}
-
-// SHOW
-function getExample (parent, args, ctx, info) {
-  const { prisma } = ctx
-  const { where } = args
-
-  return prisma.query
-    .example({ where }, info)
-    .then(handle404)
-    .catch(handle)
-}
+const { requireToken, removeEmptyStringProperties } = require('../custom-fn')
 
 // CREATE
 function createExample (parent, args, ctx, info) {
   const { prisma, req } = ctx
   const { user } = req
-  const { example } = args
+  const { data } = args
 
   // set owner of new example to be current user
-  const data = {
-    ...example,
-    owner: {
-      connect: {
-        id: user.id
-      }
+  data.owner = {
+    connect: {
+      id: user.id
     }
   }
 
@@ -103,8 +68,8 @@ function deleteExample (parent, args, ctx, info) {
 
 const examplesResolver = {
   Query: {
-    examples: getExamples,
-    example: getExample
+    examples: forwardTo('prisma'),
+    example: forwardTo('prisma')
   },
   Mutation: {
     createExample: (...args) => requireToken(createExample, args),
