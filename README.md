@@ -120,6 +120,31 @@ type Query {
   example(id: ID!): SearchExamplePayload!
 }
 ```
+OR (Updated - NOW USING)
+- A much better approach is overwrite Prisma generated schema. This would limit the input by GraphQL instead of manually preventing input in resolver. So now you can use `forwardTo` from `prisma-binding` like this:
+
+```GraphQL
+# Override UserWhereInput from prisma to prevent sensitive info
+input UserWhereInput {
+  AND: [UserWhereInput!]
+  OR: [UserWhereInput!]
+  email: String
+}
+
+type SearchExamplePayload {
+  id: ID
+  title: String
+  text: String
+  owner: ExampleOwner
+}
+```
+
+```js
+Query: {
+  examples: forwardTo('prisma'),
+  example: forwardTo('prisma')
+}
+```
 
 - one can use `connect` to update `owner` when creating a new Example. `connect` can be use by whatever is @unique on User. For instance, in below #Model, user have id, email, and token marked as unique, so once can use these to connect to User.
 
