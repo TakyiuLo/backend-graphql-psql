@@ -8,23 +8,19 @@ input UserWhereInput {
   email: String
 }
 
-type Query {
-  examples(where: ExampleWhereInput, orderBy: ExampleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Example]!
-  example(where: ExampleWhereUniqueInput!): Example
-}
-
 # Override to prevent change owner
 input ExampleUpdateInput {
   title: String
   text: String
 }
 
+type Query {
+  examples(where: ExampleWhereInput, orderBy: ExampleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Example]!
+  example(where: ExampleWhereUniqueInput!): Example!
+}
+
 type Mutation {
   createExample(data: ExampleCreateInput!): Example!
   updateExample(data: ExampleUpdateInput!, where: ExampleWhereUniqueInput!): Example
   deleteExample(where: ExampleWhereUniqueInput!): Response
-
-  # createExample(example: createExampleInput): Example!
-  # updateExample(where: whereExampleInput, data: updateExampleInput): Example!
-  # deleteExample(where: whereExampleInput): Response!
 }

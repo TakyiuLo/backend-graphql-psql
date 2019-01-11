@@ -68,7 +68,9 @@ const server = new ApolloServer({
     apiKey: process.env.ENGINE_API_KEY
   },
   tracing: true,
-  cacheControl: true,
+  // cacheControl: {
+  //   defaultMaxAge: 60 // seconds
+  // },
   // stop backtracing at responses on production
   debug: !process.env.TESTENV,
   // below are necessary properties

@@ -68,6 +68,7 @@ function deleteExample (parent, args, ctx, info) {
 
 const examplesResolver = {
   Query: {
+    // examples: forwardTo('prisma'),
     examples: forwardTo('prisma'),
     example: forwardTo('prisma')
   },
