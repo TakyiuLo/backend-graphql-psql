@@ -184,8 +184,6 @@ const data = {
 
 - `lib/auth.js` is not in use, since its using `passport`.
 
-- Caching is on for fun
-
 #### Model
 
 One(User) to Many(Examples)
