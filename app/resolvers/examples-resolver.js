@@ -17,7 +17,6 @@ const { AuthenticationError } = require('apollo-server-express')
 // requireToken also mean a resolver is 'Protected'
 const {
   requireToken,
-  wrapPopProperty,
   removeEmptyStringProperties,
   arePropertiesAllowed
 } = require('../custom-fn')
@@ -42,8 +41,7 @@ function getExamples (parent, args, ctx, info) {
 // SHOW
 function getExample (parent, args, ctx, info) {
   const { prisma } = ctx
-  const { id } = args
-  const where = { id }
+  const { where } = args
 
   return prisma.query
     .example({ where }, info)
@@ -73,17 +71,12 @@ function createExample (parent, args, ctx, info) {
 // UPDATE
 function updateExample (parent, args, ctx, info) {
   const { prisma, req } = ctx
-  let { example } = args
-  // move the `id` up one level with the rest of the properties as data
-  // to have a better looking code
-  example = wrapPopProperty(example, 'id')
-  const { id, data } = example
-  const where = { id }
+  let { where, data } = args
 
   return prisma.query
     .example({ where }, info)
     .then(res => requireOwnership(req, res))
-    .then(() => removeEmptyStringProperties(example.data, true))
+    .then(() => removeEmptyStringProperties(data, true)) // true for referencing
     .then(() => prisma.mutation.updateExample({ where, data }, info))
     .catch(handle)
 }
@@ -91,8 +84,7 @@ function updateExample (parent, args, ctx, info) {
 // DESTROY
 function deleteExample (parent, args, ctx, info) {
   const { prisma, req } = ctx
-  const { id } = args
-  const where = { id }
+  const { where } = args
 
   // passing a custom query is important because if you pass `info`, prisma won't
   // do it because its looking for a different type, Response, that defined in

@@ -12,6 +12,10 @@ type SearchExamplePayload {
   owner: ExampleOwner
 }
 
+input exampleInput {
+  id: ID!
+}
+
 type Query {
   examples(
     where: ExampleWhereInput
@@ -22,7 +26,7 @@ type Query {
     first: Int
     last: Int
   ): [SearchExamplePayload]!
-  example(id: ID!): SearchExamplePayload!
+  example(where: exampleInput): SearchExamplePayload!
 }
 
 input createExampleInput {
@@ -31,13 +35,16 @@ input createExampleInput {
 }
 
 input updateExampleInput {
-  id: ID!
   title: String
   text: String
 }
 
+input whereExampleInput {
+  id: ID!
+}
+
 type Mutation {
   createExample(example: createExampleInput): Example!
-  updateExample(example: updateExampleInput): Example!
-  deleteExample(id: ID!): Response!
+  updateExample(where: whereExampleInput, data: updateExampleInput): Example!
+  deleteExample(where: whereExampleInput): Response!
 }
