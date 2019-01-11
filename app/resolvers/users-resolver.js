@@ -138,7 +138,7 @@ async function signOut (parent, args, ctx, info) {
 const usersResolver = {
   Query: {
     // remove this query when in production
-    users: (parent, args, ctx, info) => ctx.prisma.query.users(args, info)
+    // users: (parent, args, ctx, info) => ctx.prisma.query.users(args, info)
   },
   Mutation: {
     signUp,
