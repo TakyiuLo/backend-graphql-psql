@@ -11,7 +11,7 @@ const bcrypt = require('bcrypt')
 const bcryptSaltRounds = 10
 
 // custom functions
-const { requireToken } = require('../custom-fn')
+const { requireToken, response } = require('../custom-fn')
 
 // SIGN UP
 async function signUp (parent, args, ctx, info) {
@@ -107,10 +107,7 @@ async function changePassword (parent, args, ctx, info) {
       .then(() => bcrypt.hash(passwords.new, bcryptSaltRounds))
       .then(hashedPassword => ({ hashedPassword }))
       .then(data => prisma.mutation.updateUser({ where, data }))
-      .then(() => ({
-        status: '204',
-        message: 'Successfully Changed Password'
-      }))
+      .then(() => response('204', 'Successfully Changed Password'))
       .catch(handle)
   )
 }
@@ -128,10 +125,7 @@ async function signOut (parent, args, ctx, info) {
   // save the token and respond with 204
   return prisma.mutation
     .updateUser({ where, data })
-    .then(() => ({
-      status: '204',
-      message: 'Successfully Signed Out'
-    }))
+    .then(() => response('204', 'Successfully Signed Out'))
     .catch(handle)
 }
 
