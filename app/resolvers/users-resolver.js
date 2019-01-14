@@ -17,13 +17,16 @@ const { requireToken, response } = require('../custom-fn')
 async function signUp (parent, args, ctx, info) {
   const { prisma } = ctx
   const { credentials } = args
-  const { email, password, password_confirmation } = credentials
+  let { email, password, password_confirmation } = credentials
   const checkPassword = () => {
     // eslint-disable-next-line
     if (password !== password_confirmation) {
       throw new BadParamsError()
     }
   }
+
+  email = email.toLowerCase()
+
   // start a promise chain, so that any errors will pass to `handle`
   return (
     Promise.resolve(credentials)
@@ -44,7 +47,8 @@ async function signUp (parent, args, ctx, info) {
 async function signIn (parent, args, ctx, info) {
   const { prisma } = ctx
   const { credentials } = args
-  const { email, password } = credentials
+  let { email, password } = credentials
+  email = email.toLowerCase()
   const where = { email } // used email to verify user, beacuse email is unique
 
   return prisma.query
