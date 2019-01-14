@@ -76,6 +76,16 @@ function removeEmptyStringProperties (object, referenceType = false) {
 }
 
 /*
+ * response
+ *   #function: give an response object
+ *   @params: status, message
+ *   @returns: obj
+ */
+function response (status, message) {
+  return { status, message }
+}
+
+/*
  * pLog
  *   #function: print out obj, use in the `.then` chain
  *   @params: obj
@@ -150,6 +160,7 @@ module.exports = {
   wrapPopProperty,
   removeEmptyStringProperties,
   arePropertiesAllowed,
+  response,
   plog,
   requireToken
 }

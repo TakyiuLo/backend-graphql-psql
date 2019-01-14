@@ -52,8 +52,8 @@ const prisma = new Prisma({
   // where to generate
   typeDefs: 'app/generated/prisma.graphql',
   // Prisma endpoint
-  endpoint: process.env.PRISMA_URL,
-  secret: process.env.PRISMA_SECRET
+  endpoint: process.env.PRISMA_URL
+  // secret: process.env.PRISMA_SECRET
   // debug: false
 })
 

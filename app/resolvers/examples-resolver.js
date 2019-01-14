@@ -15,7 +15,11 @@ const { handle404 } = customErrors
 const { requireOwnership } = customErrors
 
 // requireToken also mean a resolver is 'Protected'
-const { requireToken, removeEmptyStringProperties } = require('../custom-fn')
+const {
+  requireToken,
+  removeEmptyStringProperties,
+  response
+} = require('../custom-fn')
 
 // CREATE
 function createExample (parent, args, ctx, info) {
@@ -52,17 +56,14 @@ function deleteExample (parent, args, ctx, info) {
   const { where } = args
 
   // passing a custom query is important because if you pass `info`, prisma won't
-  // do it because its looking for a different type, Response, that defined in
+  // do it. Because its looking for a different type, Response, that defined in
   // our schema
   return prisma.query
     .example({ where }, `{ owner { id } }`) // get the owner of an example
     .then(handle404)
     .then(res => requireOwnership(req, res))
     .then(() => prisma.mutation.deleteExample({ where }, info))
-    .then(() => ({
-      status: '204',
-      message: 'Successfully Deleted'
-    }))
+    .then(() => response('204', 'Successfully Deleted'))
     .catch(handle)
 }
 
