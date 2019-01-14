@@ -32,12 +32,7 @@ async function signUp (parent, args, ctx, info) {
       // generate a hash from the provided password, returning a promise
       .then(() => bcrypt.hash(password, bcryptSaltRounds))
       // match object data structure
-      .then(hashedPassword => ({
-        data: {
-          email,
-          hashedPassword
-        }
-      }))
+      .then(hashedPassword => ({ data: { email, hashedPassword } }))
       // create user with provided email and hashed password
       .then(data => prisma.mutation.createUser(data))
       // pass any errors along to the error handler
