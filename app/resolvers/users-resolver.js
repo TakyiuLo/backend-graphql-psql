@@ -11,36 +11,24 @@ const bcrypt = require('bcrypt')
 const bcryptSaltRounds = 10
 
 // custom functions
-const { requireToken, response } = require('../custom-fn')
+const { requireToken, response, thrower } = require('../custom-fn')
 
 // SIGN UP
 async function signUp (parent, args, ctx, info) {
   const { prisma } = ctx
   const { credentials } = args
   let { email, password, password_confirmation } = credentials
-  const checkPassword = () => {
-    // eslint-disable-next-line
-    if (password !== password_confirmation) {
-      throw new BadParamsError()
-    }
-  }
-
+  // check if passwords are same
+  // eslint-disable-next-line
+  if (password !== password_confirmation) thrower(BadParamsError)
+  // turn all emails to lowercase
   email = email.toLowerCase()
-
-  // start a promise chain, so that any errors will pass to `handle`
-  return (
-    Promise.resolve(credentials)
-      // check if passwords are same
-      .then(checkPassword)
-      // generate a hash from the provided password, returning a promise
-      .then(() => bcrypt.hash(password, bcryptSaltRounds))
-      // match object data structure
-      .then(hashedPassword => ({ data: { email, hashedPassword } }))
-      // create user with provided email and hashed password
-      .then(data => prisma.mutation.createUser(data))
-      // pass any errors along to the error handler
-      .catch(handle)
-  )
+  // generate a hash from the provided password, returning a promise
+  const hashedPassword = await bcrypt.hash(password, bcryptSaltRounds)
+  // match object data structure
+  const data = { email, hashedPassword }
+  // create user with provided email and hashed password
+  return prisma.mutation.createUser({ data }).catch(handle)
 }
 
 // SIGN IN
@@ -50,33 +38,19 @@ async function signIn (parent, args, ctx, info) {
   let { email, password } = credentials
   email = email.toLowerCase()
   const where = { email } // used email to verify user, beacuse email is unique
+  const throwBadParams = () => thrower(BadParamsError)
 
-  return prisma.query
-    .user({ where })
-    .then(user => {
-      if (!user) {
-        throw new BadParamsError()
-      }
-      // `bcrypt.compare` will return true if the result of hashing `password`
-      // is exactly equal to the hashed password stored in the DB
-      return bcrypt.compare(password, user.hashedPassword)
-    })
-    .then(correctPassword => {
-      // if the passwords matched
-      if (!correctPassword) {
-        // throw an error to trigger the error handler and end the promise chain
-        // this will send back 422 and a message about sending wrong parameters
-        throw new BadParamsError()
-      }
-    })
-    .then(() => {
-      // the token will be a 16 byte random hex string
-      const token = crypto.randomBytes(16).toString('hex')
-      const data = { token }
-      // save the token to the DB as a property on user
-      return prisma.mutation.updateUser({ where, data })
-    })
-    .catch(handle)
+  // check if for user exist, and retreive user
+  const user = await prisma.query.user({ where }).catch(throwBadParams)
+  // `bcrypt.compare` will return true if the result of hashing `password`
+  // is exactly equal to the hashed password stored in the DB
+  const correctPassword = await bcrypt.compare(password, user.hashedPassword)
+  if (!correctPassword) throwBadParams()
+  // the token will be a 16 byte random hex string
+  const token = crypto.randomBytes(16).toString('hex')
+  const data = { token }
+  // save the token to the DB as a property on user
+  return prisma.mutation.updateUser({ where, data }).catch(handle)
 }
 
 async function changePassword (parent, args, ctx, info) {
@@ -85,30 +59,22 @@ async function changePassword (parent, args, ctx, info) {
   const { user } = req
   const { id } = user
   const where = { id }
+  const throwBadParams = () => thrower(BadParamsError)
+  const pwd = passwords
 
-  return (
-    Promise.resolve(user)
-      .then(() => bcrypt.compare(passwords.old, user.hashedPassword))
-      .then(correctPassword => {
-        // throw an error if the
-        // the old password was wrong
-        // or passwords are same,
-        // or new password is missing(an empty string),
-        if (
-          !correctPassword ||
-          passwords.new === passwords.old ||
-          !passwords.new
-        ) {
-          throw new BadParamsError()
-        }
-      })
-      // hash the new password
-      .then(() => bcrypt.hash(passwords.new, bcryptSaltRounds))
-      .then(hashedPassword => ({ hashedPassword }))
-      .then(data => prisma.mutation.updateUser({ where, data }))
-      .then(() => response('204', 'Successfully Changed Password'))
-      .catch(handle)
-  )
+  // `bcrypt.compare` will return true if the result of hashing `password`
+  // is exactly equal to the hashed password stored in the DB
+  const correctPassword = await bcrypt.compare(pwd.old, user.hashedPassword)
+  // throw an error if the
+  // the old password was wrong
+  // or passwords are same,
+  // or new password is missing(an empty string),
+  if (!correctPassword || pwd.new === pwd.old || !pwd.new) throwBadParams()
+  // generate a hash from the provided password, returning a promise
+  const hashedPassword = await bcrypt.hash(pwd.new, bcryptSaltRounds)
+  const data = { hashedPassword }
+  prisma.mutation.updateUser({ where, data }).catch(handle)
+  return response('204', 'Successfully Changed Password')
 }
 
 async function signOut (parent, args, ctx, info) {
@@ -120,12 +86,9 @@ async function signOut (parent, args, ctx, info) {
   // create a new random token for the user, invalidating the current one
   const token = crypto.randomBytes(16).toString()
   const data = { token }
-
   // save the token and respond with 204
-  return prisma.mutation
-    .updateUser({ where, data })
-    .then(() => response('204', 'Successfully Signed Out'))
-    .catch(handle)
+  prisma.mutation.updateUser({ where, data }).catch(handle)
+  return response('204', 'Successfully Signed Out')
 }
 
 const usersResolver = {

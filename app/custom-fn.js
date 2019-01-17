@@ -97,6 +97,16 @@ function plog (obj) {
 }
 
 /*
+ * thrower
+ *   #function: throw given error
+ *   @params: error
+ *   @returns: undefined
+ */
+function thrower (Error) {
+  throw new Error()
+}
+
+/*
  * isPropertyAllow
  *   #function: Test if every properties are allow. By default, it will do a
  *   weak compare. exact=false means a weak compare
@@ -162,5 +172,6 @@ module.exports = {
   arePropertiesAllowed,
   response,
   plog,
+  thrower,
   requireToken
 }
